@@ -24,13 +24,12 @@ const userControllers = {
       const newUser = new User({
         email: req.body.email,
         nameUser: req.body.nameUser,
-        phone: req.body.phone,
         password: hashed,
       });
 
       const saveUser = await newUser.save();
 
-      res.status(200).send(saveUser);
+      res.status(201).send(saveUser);
     } catch (error) {
       res.status(500).json({ message: error });
     }
@@ -73,15 +72,25 @@ const userControllers = {
   },
   updateUser: async (req: Request, res: Response) => {
     try {
-      const salt = await bcrypt.genSalt(10);
-      const hashed = await bcrypt.hash(req.body?.password, salt);
-
-      await User.findByIdAndUpdate(req.params.id, {
+      const updateData = {
         nameUser: req.body?.nameUser,
+        phone: req.body?.phone,
         email: req.body?.email,
         dateOfBirth: req.body?.dateOfBirth,
-        password: hashed,
-      });
+        sex: req.body?.sex,
+        imageUrl: req.body?.imageUrl,
+      };
+
+      if (req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        const hashed = await bcrypt.hash(req.body.password, salt);
+        await User.findByIdAndUpdate(req.params.id, {
+          ...updateData,
+          password: hashed,
+        });
+      }
+
+      await User.findByIdAndUpdate(req.params.id, updateData);
 
       res.status(200).json("Updated successfully!");
     } catch (error) {
