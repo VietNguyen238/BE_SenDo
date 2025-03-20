@@ -14,15 +14,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
       required: true,
-      lowercase: true,
     },
     password: {
       type: String,
-      require: true,
-      minlength: 6,
+      required: true,
     },
     dateOfBirth: {
-      type: Date,
+      type: String,
     },
     sex: {
       type: String,
@@ -30,6 +28,7 @@ const userSchema = new mongoose.Schema(
     imageUrl: {
       type: String,
     },
+
     addressUser: [
       {
         type: mongoose.Schema.Types.ObjectId,
