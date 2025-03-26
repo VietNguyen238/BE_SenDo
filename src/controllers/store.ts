@@ -37,7 +37,7 @@ const storeController = {
       const saveStore = await newStore.save();
 
       if (saveStore.userId) {
-        await User.updateOne({ $push: { store: saveStore.id } });
+        await User.updateOne({ $push: { storeId: saveStore.id } });
       }
 
       res.status(201).json(saveStore);
@@ -61,11 +61,13 @@ const storeController = {
 
   deleteStore: async (req: Request, res: Response) => {
     try {
-      await Store.findByIdAndDelete(req.params.id);
       await User.updateMany(
-        { store: req.params.id },
-        { $set: { store: null } }
+        { storeId: req.params.id },
+        { $pull: { storeId: req.params.id } }
       );
+
+      await Store.findByIdAndDelete(req.params.id);
+
       res.status(200).json("Deleted Store!");
     } catch (error) {
       res.status(500).json({ message: error });

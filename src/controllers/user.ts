@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/user";
 import bcrypt from "bcrypt";
+import Store from "../models/store";
 
 const userControllers = {
   getAllUser: async (req: Request, res: Response) => {
@@ -100,6 +101,7 @@ const userControllers = {
   deleteUser: async (req: Request, res: Response) => {
     try {
       await User.findByIdAndDelete(req.params.id);
+      await Store.deleteMany({ userId: req.params.id });
 
       res.status(200).json("Deleted successfully!");
     } catch (error) {
