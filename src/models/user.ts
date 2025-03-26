@@ -29,29 +29,23 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
 
-    addressUser: [
+    addressUserId: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Address",
       },
     ],
-    store: {
+    storeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
     },
-    followTheStore: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Store",
-      },
-    ],
-    order: [
+    orderId: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Order",
       },
     ],
-    chat: [
+    chatId: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat",

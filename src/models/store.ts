@@ -7,26 +7,31 @@ const storeSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    product: [
+    productId: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
       },
     ],
-    evaluate: {
-      type: Number,
+    commentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment",
     },
-    addressStore: {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    addressStoreId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Address",
     },
-    userFollow: [
+    userFollowId: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
-    chat: [
+    chatId: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat",
