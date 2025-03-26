@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 import userRoute from "./routes/user";
+import storeRoute from "./routes/store";
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/store", storeRoute);
 
 mongoose.connect(URI || "", {});
 
