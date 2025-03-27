@@ -5,12 +5,10 @@ const productSchema = new mongoose.Schema(
     nameProduct: {
       type: String,
       required: true,
+      unique: true,
     },
     brand: {
       type: String,
-    },
-    evaluate: {
-      type: Number,
     },
     color: [
       {
@@ -23,7 +21,6 @@ const productSchema = new mongoose.Schema(
     },
     newPrice: {
       type: Number,
-      required: true,
     },
     quantity: {
       type: Number,
@@ -35,14 +32,24 @@ const productSchema = new mongoose.Schema(
     basicInformation: {
       type: String,
     },
+    commentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment",
+    },
+    storeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Store",
+    },
     productDetails: [
       {
         type: String,
       },
     ],
-    imageUrl: {
-      type: Object,
-    },
+    imageUrl: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );
