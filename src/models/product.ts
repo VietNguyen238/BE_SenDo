@@ -35,20 +35,14 @@ const productSchema = new mongoose.Schema(
     basicInformation: {
       type: String,
     },
-    commentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-    },
     productDetails: [
       {
         type: String,
       },
     ],
-    imageUrl: [
-      {
-        type: Object,
-      },
-    ],
+    imageUrl: {
+      type: Object,
+    },
   },
   { timestamps: true }
 );

@@ -17,6 +17,7 @@ const userControllers = {
       res.status(500).json({ message: error });
     }
   },
+
   register: async (req: Request, res: Response) => {
     try {
       const salt = await bcrypt.genSalt(10);
@@ -35,6 +36,7 @@ const userControllers = {
       res.status(500).json({ message: error });
     }
   },
+
   login: async (req: Request, res: Response) => {
     try {
       const user = await User.findOne({ email: req.body.email });
@@ -58,6 +60,7 @@ const userControllers = {
       res.status(500).json({ message: error });
     }
   },
+
   getAUser: async (req: Request, res: Response) => {
     try {
       const user = await User.findById(req.params.id);
@@ -71,6 +74,7 @@ const userControllers = {
       res.status(500).json({ message: error });
     }
   },
+
   updateUser: async (req: Request, res: Response) => {
     try {
       const updateData = {
@@ -98,6 +102,7 @@ const userControllers = {
       res.status(500).json({ message: error });
     }
   },
+
   deleteUser: async (req: Request, res: Response) => {
     try {
       await User.findByIdAndDelete(req.params.id);

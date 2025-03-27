@@ -5,8 +5,7 @@ import User from "../models/user";
 const storeController = {
   getAStore: async (req: Request, res: Response) => {
     try {
-      const storeId = req.params.id;
-      const store = await Store.findById(storeId);
+      const store = await Store.findById(req.params.id);
       if (!store) {
         res.status(404).json("Store not found!");
       }
@@ -20,6 +19,9 @@ const storeController = {
   getAllStore: async (req: Request, res: Response) => {
     try {
       const store = await Store.find();
+      if (!store) {
+        throw new Error("Store not found!");
+      }
 
       res.status(200).json(store);
     } catch (error) {
@@ -27,7 +29,7 @@ const storeController = {
     }
   },
 
-  postStore: async (req: Request, res: Response) => {
+  addStore: async (req: Request, res: Response) => {
     try {
       const newStore = new Store({
         nameStore: req.body.nameStore,
