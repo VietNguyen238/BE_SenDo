@@ -7,16 +7,15 @@ const storeSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    imageUrl: {
+      type: String,
+    },
     productId: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
       },
     ],
-    commentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

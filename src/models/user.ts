@@ -28,7 +28,6 @@ const userSchema = new mongoose.Schema(
     imageUrl: {
       type: String,
     },
-
     addressUserId: [
       {
         type: mongoose.Schema.Types.ObjectId,
