@@ -23,11 +23,7 @@ const userControllers = {
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(req.body.password, salt);
 
-      const newUser = new User({
-        email: req.body.email,
-        nameUser: req.body.nameUser,
-        password: hashed,
-      });
+      const newUser = new User(req.body);
 
       const saveUser = await newUser.save();
 
@@ -52,6 +48,11 @@ const userControllers = {
         req.body.password,
         user.password
       );
+
+      if (!validPassword) {
+        res.status(201).json("Wrong password!");
+      }
+
       if (user && validPassword) {
         const { password, ...others } = user.toObject();
         res.status(201).json(others);
@@ -77,16 +78,11 @@ const userControllers = {
 
   updateUser: async (req: Request, res: Response) => {
     try {
-      const updateData = {
-        nameUser: req.body?.nameUser,
-        phone: req.body?.phone,
-        email: req.body?.email,
-        dateOfBirth: req.body?.dateOfBirth,
-        sex: req.body?.sex,
-        imageUrl: req.body?.imageUrl,
-      };
+      const updateData = req.body;
 
-      if (req.body.password) {
+      if (!req.body.password) {
+        await User.findByIdAndUpdate(req.params.id, updateData);
+      } else {
         const salt = await bcrypt.genSalt(10);
         const hashed = await bcrypt.hash(req.body.password, salt);
         await User.findByIdAndUpdate(req.params.id, {
@@ -94,8 +90,6 @@ const userControllers = {
           password: hashed,
         });
       }
-
-      await User.findByIdAndUpdate(req.params.id, updateData);
 
       res.status(200).json("Updated successfully!");
     } catch (error) {

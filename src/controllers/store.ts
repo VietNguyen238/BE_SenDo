@@ -31,10 +31,7 @@ const storeController = {
 
   addStore: async (req: Request, res: Response) => {
     try {
-      const newStore = new Store({
-        nameStore: req.body.nameStore,
-        userId: req.body.userId,
-      });
+      const newStore = new Store(req.body);
 
       const saveStore = await newStore.save();
 
@@ -50,10 +47,7 @@ const storeController = {
 
   updateStore: async (req: Request, res: Response) => {
     try {
-      await Store.findByIdAndUpdate(req.params.id, {
-        nameStore: req.body.nameStore,
-        imageUrl: req.body.imageUrl,
-      });
+      await Store.findByIdAndUpdate(req.params.id, req.body);
 
       res.status(200).json("Updated Store!");
     } catch (error) {
