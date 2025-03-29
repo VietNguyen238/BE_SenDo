@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Store from "../models/store";
 import User from "../models/user";
+import Address from "../models/address";
 
 const storeController = {
   getAStore: async (req: Request, res: Response) => {
@@ -36,7 +37,10 @@ const storeController = {
       const saveStore = await newStore.save();
 
       if (saveStore.userId) {
-        await User.updateOne({ $push: { storeId: saveStore.id } });
+        await User.updateOne(
+          { _id: saveStore.userId },
+          { $push: { storeId: saveStore.id } }
+        );
       }
 
       res.status(201).json(saveStore);
@@ -62,6 +66,7 @@ const storeController = {
         { $pull: { storeId: req.params.id } }
       );
 
+      await Address.deleteMany({ storeId: req.params.id });
       await Store.findByIdAndDelete(req.params.id);
 
       res.status(200).json("Deleted Store!");

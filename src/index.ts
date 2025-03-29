@@ -5,6 +5,7 @@ import cors from "cors";
 import userRoute from "./routes/user";
 import storeRoute from "./routes/store";
 import productRoute from "./routes/product";
+import addressRoute from "./routes/address";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/store", storeRoute);
 app.use("/api/v1/product", productRoute);
+app.use("/api/v1/address", addressRoute);
 
 mongoose.connect(URI || "", {});
 
