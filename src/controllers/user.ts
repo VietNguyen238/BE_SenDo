@@ -22,10 +22,15 @@ const userControllers = {
 
   register: async (req: Request, res: Response) => {
     try {
-      const salt = await bcrypt.genSalt(10);
-      const hashed = await bcrypt.hash(req.body.password, salt);
+      const { password, ...formUser } = req.body;
 
-      const newUser = new User(req.body);
+      const salt = await bcrypt.genSalt(10);
+      const hashed = await bcrypt.hash(password, salt);
+
+      const newUser = new User({
+        ...formUser,
+        password: hashed,
+      });
 
       const saveUser = await newUser.save();
 
