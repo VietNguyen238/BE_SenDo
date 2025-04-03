@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Store from "../models/store";
 import User from "../models/user";
 import Address from "../models/address";
+import cloudinary from "../utils/cloudinary";
 
 const storeController = {
   getAStore: async (req: Request, res: Response) => {
@@ -32,7 +33,15 @@ const storeController = {
 
   addStore: async (req: Request, res: Response) => {
     try {
-      const newStore = new Store(req.body);
+      let imageUrl;
+      const data = req.body;
+
+      if (req.file) {
+        const cloud = await cloudinary.v2.uploader.upload(req.file.path);
+        imageUrl = cloud.url;
+      }
+
+      const newStore = new Store({ ...data, imageUrl: imageUrl });
 
       const saveStore = await newStore.save();
 
@@ -51,7 +60,18 @@ const storeController = {
 
   updateStore: async (req: Request, res: Response) => {
     try {
-      await Store.findByIdAndUpdate(req.params.id, req.body);
+      let imageUrl;
+      const data = req.body;
+
+      if (req.file) {
+        const cloud = await cloudinary.v2.uploader.upload(req.file.path);
+        imageUrl = cloud.url;
+      }
+
+      await Store.findByIdAndUpdate(req.params.id, {
+        ...data,
+        imageUrl: imageUrl,
+      });
 
       res.status(200).json("Updated Store!");
     } catch (error) {
