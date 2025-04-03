@@ -3,6 +3,7 @@ import User from "../models/user";
 import bcrypt from "bcrypt";
 import Store from "../models/store";
 import Address from "../models/address";
+import cloudinary from "../utils/cloudinary";
 
 const userControllers = {
   getAllUser: async (req: Request, res: Response) => {
@@ -79,16 +80,28 @@ const userControllers = {
 
   updateUser: async (req: Request, res: Response) => {
     try {
+      let imageUrl;
       const updateData = req.body;
 
+      const userId = req.params.id;
+
+      if (req.file) {
+        const cloud = await cloudinary.v2.uploader.upload(req.file.path);
+        imageUrl = cloud.url;
+      }
+
       if (!req.body.password) {
-        await User.findByIdAndUpdate(req.params.id, updateData);
+        await User.findByIdAndUpdate(userId, {
+          ...updateData,
+          imageUrl: imageUrl,
+        });
       } else {
         const salt = await bcrypt.genSalt(10);
         const hashed = await bcrypt.hash(req.body.password, salt);
-        await User.findByIdAndUpdate(req.params.id, {
+        await User.findByIdAndUpdate(userId, {
           ...updateData,
           password: hashed,
+          imageUrl: imageUrl,
         });
       }
 
