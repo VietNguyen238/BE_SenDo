@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Product from "../models/product";
 import Store from "../models/store";
+import cloudinary from "../utils/cloudinary";
 
 const productController = {
   getAllProduct: async (req: Request, res: Response) => {
@@ -29,7 +30,19 @@ const productController = {
 
   addProduct: async (req: Request, res: Response) => {
     try {
-      const newProduct = new Product(req.body);
+      let imageUrl = [];
+      const data = req.body;
+
+      if (Array.isArray(req.files)) {
+        for (let index = 0; index < req.files.length; index++) {
+          const cloud = await cloudinary.v2.uploader.upload(
+            req.files[index].path
+          );
+          imageUrl.push(cloud.url);
+        }
+      }
+
+      const newProduct = new Product({ ...data, imageUrl: imageUrl });
       const saveProduct = await newProduct.save();
       if (saveProduct.storeId) {
         await Store.updateOne(
@@ -45,7 +58,22 @@ const productController = {
 
   updateProduct: async (req: Request, res: Response) => {
     try {
-      await Product.findByIdAndUpdate(req.params.id, req.body);
+      let imageUrl = [];
+      const data = req.body;
+
+      if (Array.isArray(req.files)) {
+        for (let index = 0; index < req.files.length; index++) {
+          const cloud = await cloudinary.v2.uploader.upload(
+            req.files[index].path
+          );
+          imageUrl.push(cloud.url);
+        }
+      }
+
+      await Product.findByIdAndUpdate(req.params.id, {
+        ...data,
+        imageUrl: imageUrl,
+      });
       res.status(200).json("Updated successfully");
     } catch (error) {
       res.status(500).json({ message: error });

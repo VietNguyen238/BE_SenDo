@@ -86,8 +86,8 @@ const userControllers = {
   updateUser: async (req: Request, res: Response) => {
     try {
       let imageUrl;
-      const updateData = req.body;
 
+      const updateData = req.body;
       const userId = req.params.id;
 
       if (req.file) {
