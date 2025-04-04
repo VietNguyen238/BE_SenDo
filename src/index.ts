@@ -2,10 +2,10 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
-import userRoute from "./routes/user";
-import storeRoute from "./routes/store";
-import productRoute from "./routes/product";
-import addressRoute from "./routes/address";
+import userRoute from "./routes/userRoute";
+import storeRoute from "./routes/storeRoute";
+import productRoute from "./routes/productRoute";
+import addressRoute from "./routes/addressRoute";
 
 const app = express();
 

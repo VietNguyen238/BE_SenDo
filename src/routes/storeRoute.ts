@@ -1,4 +1,4 @@
-import storeController from "../controllers/store";
+import storeController from "../controllers/storeController";
 import express from "express";
 import upload from "../middlewares/multer";
 

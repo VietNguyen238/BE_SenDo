@@ -1,4 +1,4 @@
-import addressController from "../controllers/address";
+import addressController from "../controllers/addressController";
 import express from "express";
 
 const router = express.Router();

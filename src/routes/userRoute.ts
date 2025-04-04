@@ -1,5 +1,5 @@
 import express from "express";
-import userControllers from "../controllers/user";
+import userControllers from "../controllers/userController";
 import upload from "../middlewares/multer";
 
 const router = express.Router();
