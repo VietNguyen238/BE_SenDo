@@ -32,10 +32,12 @@ const productSchema = new mongoose.Schema(
     basicInformation: {
       type: String,
     },
-    commentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-    },
+    commentId: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
     storeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",

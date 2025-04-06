@@ -43,6 +43,12 @@ const userSchema = new mongoose.Schema(
         ref: "Order",
       },
     ],
+    commentId: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
     chatId: [
       {
         type: mongoose.Schema.Types.ObjectId,
