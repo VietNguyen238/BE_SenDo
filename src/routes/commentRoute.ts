@@ -1,12 +1,29 @@
 import commentController from "../controllers/commentController";
 import express from "express";
+import userMiddleware from "../middlewares/userMiddleware";
 
 const router = express.Router();
 
-router.get("/", commentController.getAllComment);
-router.get("/:id", commentController.getAComment);
-router.post("/add", commentController.addComment);
-router.post("/update/:id", commentController.updateComment);
-router.delete("/delete/:id", commentController.deleteComment);
+router.get(
+  "/",
+  userMiddleware.verifyUserAndAdmin,
+  commentController.getAllComment
+);
+router.get(
+  "/:id",
+  userMiddleware.verifyUserAndAdmin,
+  commentController.getAComment
+);
+router.post("/add", userMiddleware.verifyToken, commentController.addComment);
+router.post(
+  "/update/:id",
+  userMiddleware.verifyToken,
+  commentController.updateComment
+);
+router.delete(
+  "/delete/:id",
+  userMiddleware.verifyUserAndAdmin,
+  commentController.deleteComment
+);
 
 export default router;

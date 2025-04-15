@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema(
         ref: "Chat",
       },
     ],
+    admin: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

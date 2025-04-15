@@ -20,55 +20,6 @@ const userControllers = {
     }
   },
 
-  register: async (req: Request, res: Response) => {
-    try {
-      const { password, ...formUser } = req.body;
-
-      const salt = await bcrypt.genSalt(10);
-      const hashed = await bcrypt.hash(password, salt);
-
-      const newUser = new User({
-        ...formUser,
-        password: hashed,
-      });
-
-      const saveUser = await newUser.save();
-
-      res.status(201).send(saveUser);
-    } catch (error) {
-      res.status(500).json({ message: error });
-    }
-  },
-
-  login: async (req: Request, res: Response) => {
-    try {
-      const user = await User.findOne({ email: req.body.email });
-      if (!user) {
-        throw new Error("User not found!");
-      }
-
-      if (!user.password) {
-        throw new Error("Password is required!");
-      }
-
-      const validPassword = await bcrypt.compare(
-        req.body.password,
-        user.password
-      );
-
-      if (!validPassword) {
-        res.status(201).json("Wrong password!");
-      }
-
-      if (user && validPassword) {
-        const { password, ...others } = user.toObject();
-        res.status(201).json(others);
-      }
-    } catch (error) {
-      res.status(500).json({ message: error });
-    }
-  },
-
   getAUser: async (req: Request, res: Response) => {
     try {
       const user = await User.findById(req.params.id);

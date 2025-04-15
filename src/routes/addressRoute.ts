@@ -1,12 +1,21 @@
 import addressController from "../controllers/addressController";
 import express from "express";
+import userMiddleware from "../middlewares/userMiddleware";
 
 const router = express.Router();
 
-router.get("/", addressController.getAllAddress);
-router.get("/:id", addressController.getAAddress);
-router.post("/add", addressController.addAddress);
-router.post("/update/:id", addressController.updateAddress);
-router.delete("/delete/:id", addressController.deleteAddress);
+router.get("/", userMiddleware.verifyToken, addressController.getAllAddress);
+router.get("/:id", userMiddleware.verifyToken, addressController.getAAddress);
+router.post("/add", userMiddleware.verifyToken, addressController.addAddress);
+router.post(
+  "/update/:id",
+  userMiddleware.verifyToken,
+  addressController.updateAddress
+);
+router.delete(
+  "/delete/:id",
+  userMiddleware.verifyToken,
+  addressController.deleteAddress
+);
 
 export default router;
