@@ -2,16 +2,8 @@ import mongoose from "mongoose";
 
 const chatSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    storeId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Store",
-    },
-    content: {
-      type: String,
+    members: {
+      type: Array,
     },
   },
   { timestamps: true }

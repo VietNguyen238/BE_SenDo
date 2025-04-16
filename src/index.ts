@@ -7,6 +7,7 @@ import storeRoute from "./routes/storeRoute";
 import productRoute from "./routes/productRoute";
 import addressRoute from "./routes/addressRoute";
 import commentRoute from "./routes/commentRoute";
+import chatRoute from "./routes/chatRoute";
 import authRoute from "./routes/authRoute";
 
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/v1/product", productRoute);
 app.use("/api/v1/address", addressRoute);
 app.use("/api/v1/comment", commentRoute);
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/chat", chatRoute);
 
 mongoose.connect(URI || "", {});
 
