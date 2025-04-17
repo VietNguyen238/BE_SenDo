@@ -9,6 +9,7 @@ import addressRoute from "./routes/addressRoute";
 import commentRoute from "./routes/commentRoute";
 import chatRoute from "./routes/chatRoute";
 import authRoute from "./routes/authRoute";
+import messageRoute from "./routes/messageRoute";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/api/v1/address", addressRoute);
 app.use("/api/v1/comment", commentRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/chat", chatRoute);
+app.use("/api/v1/message", messageRoute);
 
 mongoose.connect(URI || "", {});
 

@@ -1,11 +1,11 @@
 import express from "express";
-import messageController from "../../../messageController";
+import messageController from "../controllers/messageController";
 
 const router = express.Router();
 
-router.get("/", messageController.getMessage);
+router.get("/:chatId", messageController.getMessage);
 router.post("/", messageController.addMessage);
-router.post("/", messageController.updateMessage);
-router.delete("/", messageController.deleteMessage);
+router.post("/update/:id", messageController.updateMessage);
+router.delete("/delete/:id", messageController.deleteMessage);
 
 export default router;
