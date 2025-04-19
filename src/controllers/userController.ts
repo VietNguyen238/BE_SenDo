@@ -25,7 +25,11 @@ const userControllers = {
 
   getAUser: async (req: Request, res: Response) => {
     try {
-      const user = await User.findById(req.params.id);
+      const user = await User.findById(req.params.id)
+        .populate("addressUserId")
+        .populate("storeId")
+        .populate("orderId")
+        .populate("storeFollowId");
 
       if (!user) {
         throw new Error("User not found!");

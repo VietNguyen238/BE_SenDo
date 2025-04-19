@@ -19,7 +19,7 @@ const addressController = {
 
   getUserAddress: async (req: Request, res: Response) => {
     try {
-      const address = await Address.find({ userId: req.params.userId });
+      const address = await Address.find({ userId: req.params.id });
       if (!address) {
         throw new Error("Address not found");
       }
@@ -32,7 +32,7 @@ const addressController = {
 
   getStoreAddress: async (req: Request, res: Response) => {
     try {
-      const address = await Address.findOne({ storeId: req.params.storeId });
+      const address = await Address.findOne({ storeId: req.params.id });
       if (!address) {
         throw new Error("Address not found");
       }

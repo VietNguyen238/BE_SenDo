@@ -48,11 +48,9 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
     },
-    productDetails: [
-      {
-        type: String,
-      },
-    ],
+    productDetails: {
+      type: String,
+    },
     imageUrl: [
       {
         type: String,

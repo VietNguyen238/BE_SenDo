@@ -10,12 +10,12 @@ router.get(
   addressController.getAllAddress
 );
 router.get(
-  "/:userId",
+  "/:id",
   userMiddleware.verifyToken,
   addressController.getUserAddress
 );
 router.get(
-  "/store/:storeId",
+  "/store/:id",
   userMiddleware.verifyToken,
   addressController.getStoreAddress
 );

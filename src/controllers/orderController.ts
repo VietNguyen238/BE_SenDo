@@ -6,7 +6,9 @@ import Product from "../models/product";
 const orderController = {
   getOrder: async (req: Request, res: Response) => {
     try {
-      const order = await Order.find({ userId: req.params.userId });
+      const order = await Order.find({ userId: req.params.id })
+        .populate("userId")
+        .populate("productId");
 
       if (!order) {
         throw new Error("Order not found!");

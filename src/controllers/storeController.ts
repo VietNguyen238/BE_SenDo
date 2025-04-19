@@ -9,7 +9,7 @@ import Chat from "../models/chat";
 const storeController = {
   getAStore: async (req: Request, res: Response) => {
     try {
-      const store = await Store.findById(req.params.id);
+      const store = await Store.findById(req.params.id).populate("productId");
       if (!store) {
         throw new Error("Store not found!");
       }

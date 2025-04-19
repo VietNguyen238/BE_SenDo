@@ -5,7 +5,6 @@ import chatController from "../controllers/chatController";
 const router = express.Router();
 
 router.post("/add", userMiddleware.verifyToken, chatController.addChat);
-router.get("/:id", userMiddleware.verifyToken, chatController.getAChat);
 router.get(
   "/find/:firstId/:secondId/",
   userMiddleware.verifyToken,

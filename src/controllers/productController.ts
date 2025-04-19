@@ -19,7 +19,9 @@ const productController = {
 
   getAProduct: async (req: Request, res: Response) => {
     try {
-      const product = await Product.findById(req.params.id);
+      const product = await Product.findById(req.params.id).populate(
+        "commentId"
+      );
       if (!product) {
         throw new Error("Product not found!");
       }

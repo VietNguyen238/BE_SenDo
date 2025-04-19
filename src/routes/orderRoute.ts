@@ -4,11 +4,7 @@ import userMiddleware from "../middlewares/userMiddleware";
 
 const router = express.Router();
 
-router.get(
-  "/:userId",
-  userMiddleware.verifyUserAndAdmin,
-  orderController.getOrder
-);
+router.get("/:id", userMiddleware.verifyUserAndAdmin, orderController.getOrder);
 router.post("/add", userMiddleware.verifyToken, orderController.addOrder);
 router.post(
   "/update/:id",

@@ -28,7 +28,7 @@ const userMiddleware = {
 
   verifyUserAndAdmin: (req: Request, res: Response, next: NextFunction) => {
     userMiddleware.verifyToken(req, res, () => {
-      if ((req as any).user.id === req.params.id || (req as any).user.admin) {
+      if ((req as any).user._id === req.params.id || (req as any).user.admin) {
         next();
       } else {
         res
