@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Product from "../models/product";
 import Store from "../models/store";
 import cloudinary from "../utils/cloudinary";
+import Comment from "../models/comment";
 
 const productController = {
   getAllProduct: async (req: Request, res: Response) => {
@@ -82,10 +83,11 @@ const productController = {
 
   deleteProduct: async (req: Request, res: Response) => {
     try {
-      await Store.updateMany(
+      await Store.updateOne(
         { productId: req.params.id },
         { $pull: { productId: req.params.id } }
       );
+      await Comment.deleteMany({ productId: req.params.id });
       await Product.findByIdAndDelete(req.params.id);
 
       res.status(200).json("Deleted successfully");
