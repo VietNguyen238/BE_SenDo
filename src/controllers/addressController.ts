@@ -17,9 +17,22 @@ const addressController = {
     }
   },
 
-  getAAddress: async (req: Request, res: Response) => {
+  getUserAddress: async (req: Request, res: Response) => {
     try {
-      const address = await Address.find();
+      const address = await Address.find({ userId: req.params.userId });
+      if (!address) {
+        throw new Error("Address not found");
+      }
+
+      res.status(200).json(address);
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  },
+
+  getStoreAddress: async (req: Request, res: Response) => {
+    try {
+      const address = await Address.findOne({ storeId: req.params.storeId });
       if (!address) {
         throw new Error("Address not found");
       }

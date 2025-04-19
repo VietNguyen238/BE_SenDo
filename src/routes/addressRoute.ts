@@ -9,7 +9,16 @@ router.get(
   userMiddleware.verifyUserAndAdmin,
   addressController.getAllAddress
 );
-router.get("/:id", userMiddleware.verifyToken, addressController.getAAddress);
+router.get(
+  "/:userId",
+  userMiddleware.verifyToken,
+  addressController.getUserAddress
+);
+router.get(
+  "/store/:storeId",
+  userMiddleware.verifyToken,
+  addressController.getStoreAddress
+);
 router.post("/add", userMiddleware.verifyToken, addressController.addAddress);
 router.post(
   "/update/:id",
