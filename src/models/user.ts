@@ -55,6 +55,12 @@ const userSchema = new mongoose.Schema(
         ref: "Chat",
       },
     ],
+    storeFollowId: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Store",
+      },
+    ],
     admin: {
       type: Boolean,
       default: false,

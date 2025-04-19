@@ -16,8 +16,6 @@ const userMiddleware = {
             throw new Error("Token is not valid!");
           }
 
-          console.log("user:", user);
-          console.log("req user:", (req as any).user);
           (req as any).user = user;
 
           next();

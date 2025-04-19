@@ -3,13 +3,15 @@ import Store from "../models/store";
 import User from "../models/user";
 import Address from "../models/address";
 import cloudinary from "../utils/cloudinary";
+import Product from "../models/product";
+import Chat from "../models/chat";
 
 const storeController = {
   getAStore: async (req: Request, res: Response) => {
     try {
       const store = await Store.findById(req.params.id);
       if (!store) {
-        res.status(404).json("Store not found!");
+        throw new Error("Store not found!");
       }
 
       res.status(200).json(store);
@@ -81,13 +83,19 @@ const storeController = {
 
   deleteStore: async (req: Request, res: Response) => {
     try {
-      await User.updateMany(
-        { storeId: req.params.id },
-        { $pull: { storeId: req.params.id } }
-      );
-
-      await Address.deleteMany({ storeId: req.params.id });
       await Store.findByIdAndDelete(req.params.id);
+
+      await User.updateOne(
+        { storeId: req.params.id },
+        { $set: { storeId: "" } }
+      );
+      await User.updateMany(
+        { storeFollowId: req.params.id },
+        { $pull: { storeFollowId: req.params.id } }
+      );
+      await Address.deleteMany({ storeId: req.params.id });
+      await Product.deleteMany({ storeId: req.params.id });
+      await Chat.deleteMany({ members: { $in: [req.params.id] } });
 
       res.status(200).json("Deleted Store!");
     } catch (error) {

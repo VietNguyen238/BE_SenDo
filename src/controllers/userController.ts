@@ -4,6 +4,9 @@ import bcrypt from "bcrypt";
 import Store from "../models/store";
 import Address from "../models/address";
 import cloudinary from "../utils/cloudinary";
+import Order from "../models/order";
+import Comment from "../models/comment";
+import Chat from "../models/chat";
 
 const userControllers = {
   getAllUser: async (req: Request, res: Response) => {
@@ -70,8 +73,16 @@ const userControllers = {
   deleteUser: async (req: Request, res: Response) => {
     try {
       await User.findByIdAndDelete(req.params.id);
+
+      await Store.updateMany(
+        { userFollowId: req.params.id },
+        { $pull: { userFollowId: req.params.id } }
+      );
       await Store.deleteMany({ userId: req.params.id });
       await Address.deleteMany({ userId: req.params.id });
+      await Order.deleteMany({ userId: req.params.id });
+      await Comment.deleteMany({ userId: req.params.id });
+      await Chat.deleteMany({ members: { $in: [req.params.id] } });
 
       res.status(200).json("Deleted successfully!");
     } catch (error) {

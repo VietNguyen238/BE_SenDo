@@ -5,12 +5,8 @@ import userMiddleware from "../middlewares/userMiddleware";
 
 const router = express.Router();
 
-router.get("/", userMiddleware.verifyUserAndAdmin, storeController.getAllStore);
-router.get(
-  "/:id",
-  userMiddleware.verifyUserAndAdmin,
-  storeController.getAStore
-);
+router.get("/", storeController.getAllStore);
+router.get("/:id", storeController.getAStore);
 router.post(
   "/add",
   userMiddleware.verifyToken,
