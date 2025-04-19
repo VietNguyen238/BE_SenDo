@@ -4,7 +4,11 @@ import userMiddleware from "../middlewares/userMiddleware";
 
 const router = express.Router();
 
-router.get("/", userMiddleware.verifyToken, addressController.getAllAddress);
+router.get(
+  "/",
+  userMiddleware.verifyUserAndAdmin,
+  addressController.getAllAddress
+);
 router.get("/:id", userMiddleware.verifyToken, addressController.getAAddress);
 router.post("/add", userMiddleware.verifyToken, addressController.addAddress);
 router.post(

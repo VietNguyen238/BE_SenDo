@@ -10,7 +10,7 @@ router.get("/:id", productController.getAProduct);
 router.post(
   "/add",
   userMiddleware.verifyToken,
-  upload.array("products"),
+  upload.array("products", 8),
   productController.addProduct
 );
 router.post(
