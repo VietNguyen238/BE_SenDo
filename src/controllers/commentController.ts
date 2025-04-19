@@ -35,21 +35,7 @@ const commentController = {
 
   getAllComment: async (req: Request, res: Response) => {
     try {
-      const comment = await Comment.find();
-
-      if (!comment) {
-        throw new Error("Comment not found!");
-      }
-
-      res.status(200).json(comment);
-    } catch (error) {
-      res.status(500).json({ message: error });
-    }
-  },
-
-  getAComment: async (req: Request, res: Response) => {
-    try {
-      const comment = await Comment.findById(req.params.id);
+      const comment = await Comment.find({ productId: req.params.productId });
 
       if (!comment) {
         throw new Error("Comment not found!");
