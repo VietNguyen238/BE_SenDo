@@ -38,7 +38,11 @@ const orderController = {
         );
       }
 
-      if (saveOrder.quantity && product) {
+      if (
+        product &&
+        saveOrder.quantity &&
+        saveOrder.quantity < product.quantity
+      ) {
         await Product.updateMany(
           { _id: saveOrder.productId },
           { $set: { quantity: product.quantity - saveOrder.quantity } }
@@ -65,10 +69,6 @@ const orderController = {
     try {
       await Order.findByIdAndDelete(req.params.id);
       await User.updateMany(
-        { orderId: req.params.id },
-        { $pull: { orderId: req.params.id } }
-      );
-      await Product.updateMany(
         { orderId: req.params.id },
         { $pull: { orderId: req.params.id } }
       );
