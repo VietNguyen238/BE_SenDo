@@ -1,19 +1,19 @@
 import express from "express";
 import userMiddleware from "../middlewares/userMiddleware";
-import chatController from "../controllers/chatController";
+import categoryController from "../controllers/categoryController";
 
 const router = express.Router();
 
-router.post("/add", userMiddleware.verifyToken, chatController.create);
+router.post("/add", userMiddleware.verifyToken, categoryController.create);
 router.get(
-  "/find/:firstId/:secondId/",
+  "/:id",
   userMiddleware.verifyToken,
-  chatController.findChat
+  categoryController.getById
 );
 router.delete(
   "/delete/:id",
   userMiddleware.verifyToken,
-  chatController.delete
+  categoryController.delete
 );
 
 export default router;

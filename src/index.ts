@@ -11,6 +11,8 @@ import chatRoute from "./routes/chatRoute";
 import authRoute from "./routes/authRoute";
 import messageRoute from "./routes/messageRoute";
 import orderRoute from "./routes/orderRoute";
+import categoryRoute from "./routes/categoryRoute";
+import subCategoryRoute from "./routes/subCategoryRoute";
 
 const app = express();
 
@@ -31,6 +33,8 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/chat", chatRoute);
 app.use("/api/v1/message", messageRoute);
 app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/category", categoryRoute);
+app.use("/api/v1/subCategory", subCategoryRoute);
 
 mongoose.connect(URI || "", {});
 
