@@ -1,10 +1,7 @@
 import mongoose from "mongoose";
 
 const voucherSchema = new mongoose.Schema({
-    voucherId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Voucher",
-    },
+
     voucherName:{
         type: String,
         required: true,
@@ -27,7 +24,8 @@ const voucherSchema = new mongoose.Schema({
     },
 
 },
-{ timestamp: true });
+{ timestamps: true }
+);
 
 const Voucher = mongoose.model("Voucher", voucherSchema);
 

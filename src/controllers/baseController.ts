@@ -38,7 +38,15 @@ class BaseController<T extends Document> {
             res.status(500).json({ message: error });
         }
     };
-
+    createMany = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const newItems = req.body.map((item: T) => new this.model(item));
+            const savedItems = await this.model.insertMany(newItems);
+            res.status(201).json(savedItems);
+        } catch (error) {
+            res.status(500).json({ message: error });
+        }
+    };
     // Update document
     update = async (req: Request, res: Response): Promise<void> => {
         try {

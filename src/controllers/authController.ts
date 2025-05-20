@@ -14,7 +14,7 @@ const authController = {
       },
       process.env.JWT_SECRET_KEY as string,
       {
-        expiresIn: "1m",
+        expiresIn: "1d",
       }
     );
   },
@@ -90,45 +90,46 @@ const authController = {
 
   login: async (req: Request, res: Response) => {
     try {
+      console.log("Login req.body:", req.body);
+  
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
         throw new Error("User not found!");
       }
-
+  
       if (!user.password) {
-        throw new Error("Password is required!");
+        throw new Error("Password is empty or invalid!");
       }
-
+  
       const validPassword = await bcrypt.compare(
         req.body.password,
         user.password
       );
-
       if (!validPassword) {
         throw new Error("Wrong password!");
       }
-
-      if (user && validPassword) {
-        const accessToken = authController.generateAccessToken(user as any);
-        const refreshToken = authController.generateRefreshToken(user as any);
-
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: false,
-          path: "/",
-          sameSite: "strict",
-        });
-
-        requestRefreshToken = refreshToken;
-
-        const { password, ...others } = user.toObject();
-
-        res.status(201).json({ ...others, accessToken });
-      }
+  
+      const accessToken = authController.generateAccessToken(user as any);
+      const refreshToken = authController.generateRefreshToken(user as any);
+      console.log(refreshToken);
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        path: "/",
+        sameSite: "strict",
+      });
+  
+      requestRefreshToken = refreshToken;
+  
+      const { password, ...others } = user.toObject();
+  
+      res.status(201).json({ ...others, accessToken });
     } catch (error) {
-      res.status(500).json({ message: error });
+      console.error("Login error:", error);
+      res.status(500).json({ message: (error as Error).message });
     }
   },
+  
 
   logout: async (req: Request, res: Response) => {
     requestRefreshToken = "";
