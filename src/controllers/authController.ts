@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import User from "../models/user";
@@ -137,6 +137,50 @@ const authController = {
     res.clearCookie("refreshToken");
     res.status(200).json("Logout successfuly!");
   },
+
+  registerMany: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const users = req.body; // giả sử đây là mảng user
+
+      if (!Array.isArray(users)) {
+        res.status(400).json({ message: "Dữ liệu phải là mảng user" });
+        return;
+      }
+
+      const results = [];
+
+      for (const userData of users) {
+        const { email, password, ...formUser } = userData;
+
+        // Check email tồn tại chưa
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+          results.push({ email, status: "failed", message: "Email đã tồn tại" });
+          continue; // bỏ qua user này
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashed = await bcrypt.hash(password, salt);
+
+        const newUser = new User({
+          email,
+          ...formUser,
+          password: hashed,
+        });
+
+        const savedUser = await newUser.save();
+
+        results.push({ email, status: "success", userId: savedUser._id });
+      }
+
+      res.status(201).json(results);
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  },
 };
+
+
 
 export default authController;

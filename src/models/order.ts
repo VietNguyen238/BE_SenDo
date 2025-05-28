@@ -1,17 +1,12 @@
 import mongoose from "mongoose";
 
+
+
 const orderSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    },
-    productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-    },
-    quantity: {
-      type: Number,
     },
     status: {
       type: String,
@@ -22,6 +17,29 @@ const orderSchema = new mongoose.Schema(
         "delivered",
         "canceled",
       ],
+    },
+    productId:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+    quantity:{
+      type: Number,
+      require: true,
+    },
+    paymentMethob:{
+      type: String,
+      enum: [
+        "cod",
+        "online",
+        "momo",
+      ]
+    },
+    note:{
+      type: String,
+    },
+    total:{
+      type: Number,
     },
   },
   { timestamps: true }

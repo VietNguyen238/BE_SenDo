@@ -12,15 +12,15 @@ const userVoucherSchema = new mongoose.Schema({
         required: true,
     },
     redeemedAt:{
-        type: Datetime,
+        type: Date,
         required: true,
     },
     isUsed:{
         type: Boolean,
         default: false,
     },
-    useAt?:{
-        type: Datetime,
+    useAt:{
+        type: Date,
         required: true,
     },
 

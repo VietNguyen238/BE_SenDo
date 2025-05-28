@@ -42,6 +42,7 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
     basicInformation: {
+
       type: String,
     },
     commentId: [
@@ -54,9 +55,7 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
     },
-    productDetails: {
-      type: String,
-    },
+
     imageUrl: [
       {
         type: String,
@@ -67,12 +66,12 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
-    
+
     subcategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Subcategory",
     },
-    
+
   },
   { timestamps: true }
 );

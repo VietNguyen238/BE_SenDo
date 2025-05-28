@@ -10,6 +10,8 @@ class ProductController extends BaseController<any> {
     super(Product);
   }
 
+
+
   async getAllProduct(req: Request, res: Response) {
     try {
       const products = await Product.find();

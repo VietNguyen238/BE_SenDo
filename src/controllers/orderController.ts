@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import Order from "../models/order";
 import User from "../models/user";
 import Product from "../models/product";
@@ -10,8 +10,9 @@ const orderController = {
         .populate("userId")
         .populate("productId");
 
-      if (!order) {
+      if (!order || order.length === 0) {
         throw new Error("Order not found!");
+        // return res.status(404).json({ message:" Chưa có sản phẩm trong giỏ hàng! "})
       }
 
       res.status(200).json(order);
@@ -22,7 +23,9 @@ const orderController = {
 
   addOrder: async (req: Request, res: Response) => {
     try {
-      const newOrder = new Order(req.body);
+      const newOrder = new Order({...req.body,
+        userId: (req as any).user._id,
+      });
       const saveOrder = await newOrder.save();
       const product = await Product.findById(saveOrder.productId);
 
@@ -43,7 +46,7 @@ const orderController = {
       if (
         product &&
         saveOrder.quantity &&
-        saveOrder.quantity < product.quantity
+        saveOrder.quantity <= product.quantity
       ) {
         await Product.updateMany(
           { _id: saveOrder.productId },
@@ -80,6 +83,59 @@ const orderController = {
       res.status(500).json({ message: error });
     }
   },
+
+  // phương thức dùng để fake data cho recommend
+  addManyOrders: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const orders = req.body; // [{ productId, quantity, userId, ... }, {...}]
+      const currentUser = (req as any).user;
+      const savedOrders = [];
+  
+      for (const orderData of orders) {
+        // Kiểm tra nếu là admin thì cho phép tạo order cho user khác
+        const userId = currentUser.role === 'admin' && orderData.userId ? orderData.userId : currentUser._id;
+        
+        const newOrder = new Order({
+          ...orderData,
+          userId,
+        });
+  
+        const savedOrder = await newOrder.save();
+        savedOrders.push(savedOrder);
+  
+        const product = await Product.findById(savedOrder.productId);
+  
+        if (savedOrder.productId && product) {
+          if (savedOrder.quantity && savedOrder.quantity <= product.quantity) {
+            await Product.updateOne(
+              { _id: savedOrder.productId },
+              {
+                $inc: { quantity: -savedOrder.quantity },
+                $push: { orderId: savedOrder._id },
+              }
+            );
+          } else {
+            res.status(400).json({
+              message: `Sản phẩm với ID ${savedOrder.productId} không đủ hàng`,
+            });
+            return;
+          }
+        }
+  
+        if (savedOrder.userId) {
+          await User.updateOne(
+            { _id: savedOrder.userId },
+            { $push: { orderId: savedOrder._id } }
+          );
+        }
+      }
+  
+      res.status(200).json(savedOrders);
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  }
+
 };
 
 export default orderController;
