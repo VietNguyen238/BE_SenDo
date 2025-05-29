@@ -14,6 +14,8 @@ import orderRoute from "./routes/orderRoute";
 import categoryRoute from "./routes/categoryRoute";
 import subCategoryRoute from "./routes/subCategoryRoute";
 import reviewRoute from "./routes/reviewRoute";
+import paymentRoute from "./routes/paymentRoute";
+
 const app = express();
 
 dotenv.config();
@@ -37,6 +39,7 @@ app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/subCategory", subCategoryRoute);
 app.use("/api/v1/review", reviewRoute);
 app.use("/api/v1/voucher", subCategoryRoute);
+app.use("/api/v1/payment", paymentRoute);
 
 mongoose.connect(URI || "", {});
 
