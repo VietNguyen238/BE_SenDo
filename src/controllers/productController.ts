@@ -3,100 +3,115 @@ import Product from "../models/product";
 import Store from "../models/store";
 import cloudinary from "../utils/cloudinary";
 import Comment from "../models/comment";
+import BaseController from "./baseController";
 
-const productController = {
-  getAllProduct: async (req: Request, res: Response) => {
+class ProductController extends BaseController<any> {
+  constructor() {
+    super(Product);
+  }
+
+
+
+  async getAllProduct(req: Request, res: Response) {
     try {
-      const product = await Product.find();
+      const products = await Product.find();
+      if (!products.length) {
+        return res.status(404).json({ message: "No products found!" });
+      }
+      res.status(200).json(products);
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  }
+
+  async getAProduct(req: Request, res: Response) {
+    try {
+      const product = await Product.findById(req.params.id).populate("commentId");
       if (!product) {
-        throw new Error("Product not found!");
+        return res.status(404).json({ message: "Product not found!" });
       }
       res.status(200).json(product);
     } catch (error) {
-      res.status(500).json({ message: error });
+      res.status(500).json({ message: (error as Error).message });
     }
-  },
+  }
 
-  getAProduct: async (req: Request, res: Response) => {
+  async addProduct(req: Request, res: Response) {
     try {
-      const product = await Product.findById(req.params.id).populate(
-        "commentId"
-      );
-      if (!product) {
-        throw new Error("Product not found!");
-      }
-      res.status(200).json(product);
-    } catch (error) {
-      res.status(500).json({ message: error });
-    }
-  },
-
-  addProduct: async (req: Request, res: Response) => {
-    try {
-      let imageUrl = [];
       const data = req.body;
+      let imageUrl: string[] = [];
 
       if (Array.isArray(req.files)) {
-        for (let index = 0; index < req.files.length; index++) {
-          const cloud = await cloudinary.v2.uploader.upload(
-            req.files[index].path
-          );
-          imageUrl.push(cloud.url);
+        for (const file of req.files as Express.Multer.File[]) {
+          const cloud = await cloudinary.v2.uploader.upload(file.path);
+          imageUrl.push(cloud.secure_url);
         }
       }
 
-      const newProduct = new Product({ ...data, imageUrl: imageUrl });
-      const saveProduct = await newProduct.save();
-      if (saveProduct.storeId) {
-        await Store.updateOne(
-          { _id: saveProduct.storeId },
-          { $push: { productId: saveProduct.id } }
-        );
-      }
-      res.status(201).json(saveProduct);
-    } catch (error) {
-      res.status(500).json({ message: error });
-    }
-  },
+      const newProduct = new Product({ ...data, imageUrl });
+      const savedProduct = await newProduct.save();
 
-  updateProduct: async (req: Request, res: Response) => {
+      if (savedProduct.storeId) {
+        await Store.findByIdAndUpdate(savedProduct.storeId, {
+          $push: { productId: savedProduct._id },
+        });
+      }
+
+      res.status(201).json(savedProduct);
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  }
+
+  async updateProduct(req: Request, res: Response) {
     try {
-      let imageUrl = [];
       const data = req.body;
+      let imageUrl: string[] = [];
 
       if (Array.isArray(req.files)) {
-        for (let index = 0; index < req.files.length; index++) {
-          const cloud = await cloudinary.v2.uploader.upload(
-            req.files[index].path
-          );
-          imageUrl.push(cloud.url);
+        for (const file of req.files as Express.Multer.File[]) {
+          const cloud = await cloudinary.v2.uploader.upload(file.path);
+          imageUrl.push(cloud.secure_url);
         }
       }
 
-      await Product.findByIdAndUpdate(req.params.id, {
-        ...data,
-        imageUrl: imageUrl,
-      });
-      res.status(200).json("Updated successfully");
-    } catch (error) {
-      res.status(500).json({ message: error });
-    }
-  },
-
-  deleteProduct: async (req: Request, res: Response) => {
-    try {
-      await Store.updateOne(
-        { productId: req.params.id },
-        { $pull: { productId: req.params.id } }
+      const updated = await Product.findByIdAndUpdate(
+        req.params.id,
+        { ...data, ...(imageUrl.length ? { imageUrl } : {}) },
+        { new: true }
       );
-      await Comment.deleteMany({ productId: req.params.id });
-      await Product.findByIdAndDelete(req.params.id);
 
-      res.status(200).json("Deleted successfully");
+      if (!updated) {
+        return res.status(404).json({ message: "Product not found!" });
+      }
+
+      res.status(200).json(updated);
     } catch (error) {
-      res.status(500).json({ message: error });
+      res.status(500).json({ message: (error as Error).message });
     }
-  },
-};
+  }
 
-export default productController;
+  async deleteProduct(req: Request, res: Response) {
+    try {
+      const productId = req.params.id;
+
+      await Store.updateMany(
+        { productId },
+        { $pull: { productId } }
+      );
+
+      await Comment.deleteMany({ productId });
+      const deleted = await Product.findByIdAndDelete(productId);
+
+      if (!deleted) {
+        return res.status(404).json({ message: "Product not found!" });
+      }
+
+      res.status(200).json({ message: "Deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  }
+}
+
+export default new ProductController();

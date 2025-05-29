@@ -4,7 +4,7 @@ import chatController from "../controllers/chatController";
 
 const router = express.Router();
 
-router.post("/add", userMiddleware.verifyToken, chatController.addChat);
+router.post("/add", userMiddleware.verifyToken, chatController.create);
 router.get(
   "/find/:firstId/:secondId/",
   userMiddleware.verifyToken,
@@ -13,7 +13,7 @@ router.get(
 router.delete(
   "/delete/:id",
   userMiddleware.verifyToken,
-  chatController.deleteChat
+  chatController.delete
 );
 
 export default router;

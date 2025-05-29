@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get("/:id", userMiddleware.verifyUserAndAdmin, orderController.getOrder);
 router.post("/add", userMiddleware.verifyToken, orderController.addOrder);
+router.post("/addMany", userMiddleware.verifyToken, orderController.addManyOrders);
 router.post(
   "/update/:id",
   userMiddleware.verifyToken,

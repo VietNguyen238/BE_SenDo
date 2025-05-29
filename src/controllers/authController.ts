@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import User from "../models/user";
@@ -14,7 +14,7 @@ const authController = {
       },
       process.env.JWT_SECRET_KEY as string,
       {
-        expiresIn: "30s",
+        expiresIn: "1d",
       }
     );
   },
@@ -90,45 +90,46 @@ const authController = {
 
   login: async (req: Request, res: Response) => {
     try {
+      console.log("Login req.body:", req.body);
+  
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
         throw new Error("User not found!");
       }
-
+  
       if (!user.password) {
-        throw new Error("Password is required!");
+        throw new Error("Password is empty or invalid!");
       }
-
+  
       const validPassword = await bcrypt.compare(
         req.body.password,
         user.password
       );
-
       if (!validPassword) {
         throw new Error("Wrong password!");
       }
-
-      if (user && validPassword) {
-        const accessToken = authController.generateAccessToken(user as any);
-        const refreshToken = authController.generateRefreshToken(user as any);
-
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: false,
-          path: "/",
-          sameSite: "strict",
-        });
-
-        requestRefreshToken = refreshToken;
-
-        const { password, ...others } = user.toObject();
-
-        res.status(201).json({ ...others, accessToken });
-      }
+  
+      const accessToken = authController.generateAccessToken(user as any);
+      const refreshToken = authController.generateRefreshToken(user as any);
+      console.log(refreshToken);
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        path: "/",
+        sameSite: "strict",
+      });
+  
+      requestRefreshToken = refreshToken;
+  
+      const { password, ...others } = user.toObject();
+  
+      res.status(201).json({ ...others, accessToken });
     } catch (error) {
-      res.status(500).json({ message: error });
+      console.error("Login error:", error);
+      res.status(500).json({ message: (error as Error).message });
     }
   },
+  
 
   logout: async (req: Request, res: Response) => {
     requestRefreshToken = "";
@@ -136,6 +137,50 @@ const authController = {
     res.clearCookie("refreshToken");
     res.status(200).json("Logout successfuly!");
   },
+
+  registerMany: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const users = req.body; // giả sử đây là mảng user
+
+      if (!Array.isArray(users)) {
+        res.status(400).json({ message: "Dữ liệu phải là mảng user" });
+        return;
+      }
+
+      const results = [];
+
+      for (const userData of users) {
+        const { email, password, ...formUser } = userData;
+
+        // Check email tồn tại chưa
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+          results.push({ email, status: "failed", message: "Email đã tồn tại" });
+          continue; // bỏ qua user này
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashed = await bcrypt.hash(password, salt);
+
+        const newUser = new User({
+          email,
+          ...formUser,
+          password: hashed,
+        });
+
+        const savedUser = await newUser.save();
+
+        results.push({ email, status: "success", userId: savedUser._id });
+      }
+
+      res.status(201).json(results);
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  },
 };
+
+
 
 export default authController;

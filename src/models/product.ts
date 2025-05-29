@@ -25,6 +25,12 @@ const productSchema = new mongoose.Schema(
     quantity: {
       type: Number,
       required: true,
+      default: 0,
+    },
+    status: {
+      type: String,
+      enum: ["in_stock", "out_of_stock"],
+      default: "in_stock",
     },
     orderId: [
       {
@@ -36,6 +42,7 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
     basicInformation: {
+
       type: String,
     },
     commentId: [
@@ -48,14 +55,23 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
     },
-    productDetails: {
-      type: String,
-    },
+
     imageUrl: [
       {
         type: String,
       },
     ],
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+
+    subcategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subcategory",
+    },
+
   },
   { timestamps: true }
 );
