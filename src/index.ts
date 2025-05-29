@@ -11,6 +11,7 @@ import chatRoute from "./routes/chatRoute";
 import authRoute from "./routes/authRoute";
 import messageRoute from "./routes/messageRoute";
 import orderRoute from "./routes/orderRoute";
+import paymentRoute from "./routes/paymentRoute";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/chat", chatRoute);
 app.use("/api/v1/message", messageRoute);
 app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/payment", paymentRoute);
 
 mongoose.connect(URI || "", {});
 
