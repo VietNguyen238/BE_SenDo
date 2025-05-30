@@ -7,7 +7,7 @@ const productSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    brand: {
+    productCode: {
       type: String,
     },
     color: [
@@ -15,7 +15,7 @@ const productSchema = new mongoose.Schema(
         type: String,
       },
     ],
-    originalPrice: {
+    price: {
       type: Number,
       required: true,
     },
@@ -27,22 +27,10 @@ const productSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
-    status: {
-      type: String,
-      enum: ["in_stock", "out_of_stock"],
-      default: "in_stock",
-    },
-    orderId: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Order",
-      },
-    ],
     description: {
       type: String,
     },
     basicInformation: {
-
       type: String,
     },
     commentId: [
@@ -51,11 +39,6 @@ const productSchema = new mongoose.Schema(
         ref: "Comment",
       },
     ],
-    storeId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Store",
-    },
-
     imageUrl: [
       {
         type: String,
@@ -66,12 +49,6 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
-
-    subcategory: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Subcategory",
-    },
-
   },
   { timestamps: true }
 );

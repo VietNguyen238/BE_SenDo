@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Product from "../models/product";
-import Store from "../models/store";
 import cloudinary from "../utils/cloudinary";
 import Comment from "../models/comment";
 import BaseController from "./baseController";
@@ -9,8 +8,6 @@ class ProductController extends BaseController<any> {
   constructor() {
     super(Product);
   }
-
-
 
   async getAllProduct(req: Request, res: Response) {
     try {
@@ -26,7 +23,9 @@ class ProductController extends BaseController<any> {
 
   async getAProduct(req: Request, res: Response) {
     try {
-      const product = await Product.findById(req.params.id).populate("commentId");
+      const product = await Product.findById(req.params.id).populate(
+        "commentId"
+      );
       if (!product) {
         return res.status(404).json({ message: "Product not found!" });
       }
@@ -50,12 +49,6 @@ class ProductController extends BaseController<any> {
 
       const newProduct = new Product({ ...data, imageUrl });
       const savedProduct = await newProduct.save();
-
-      if (savedProduct.storeId) {
-        await Store.findByIdAndUpdate(savedProduct.storeId, {
-          $push: { productId: savedProduct._id },
-        });
-      }
 
       res.status(201).json(savedProduct);
     } catch (error) {
@@ -94,11 +87,6 @@ class ProductController extends BaseController<any> {
   async deleteProduct(req: Request, res: Response) {
     try {
       const productId = req.params.id;
-
-      await Store.updateMany(
-        { productId },
-        { $pull: { productId } }
-      );
 
       await Comment.deleteMany({ productId });
       const deleted = await Product.findByIdAndDelete(productId);

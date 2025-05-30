@@ -14,11 +14,6 @@ router.get(
   userMiddleware.verifyToken,
   addressController.getUserAddress
 );
-router.get(
-  "/store/:id",
-  userMiddleware.verifyToken,
-  addressController.getStoreAddress
-);
 router.post("/add", userMiddleware.verifyToken, addressController.addAddress);
 router.post(
   "/update/:id",

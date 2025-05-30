@@ -4,7 +4,6 @@ const userSchema = new mongoose.Schema(
   {
     nameUser: {
       type: String,
-      // unique: true,
     },
     phone: {
       type: String,
@@ -33,10 +32,6 @@ const userSchema = new mongoose.Schema(
         ref: "Address",
       },
     ],
-    storeId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Store",
-    },
     orderId: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -53,12 +48,6 @@ const userSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat",
-      },
-    ],
-    storeFollowId: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Store",
       },
     ],
     admin: {

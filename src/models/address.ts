@@ -2,25 +2,21 @@ import mongoose from "mongoose";
 
 const addressSchema = new mongoose.Schema(
   {
-    address: {
-      type: String,
-    },
-    commune: {
+    province: {
       type: String,
     },
     district: {
       type: String,
     },
-    city: {
+    ward: {
+      type: String,
+    },
+    address: {
       type: String,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    },
-    storeId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Store",
     },
   },
   { timestamps: true }

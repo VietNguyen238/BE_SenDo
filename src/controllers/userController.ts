@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import User from "../models/user";
 import bcrypt from "bcrypt";
-import Store from "../models/store";
 import Address from "../models/address";
 import cloudinary from "../utils/cloudinary";
 import Order from "../models/order";
@@ -27,9 +26,7 @@ const userControllers = {
     try {
       const user = await User.findById(req.params.id)
         .populate("addressUserId")
-        .populate("storeId")
-        .populate("orderId")
-        .populate("storeFollowId");
+        .populate("orderId");
 
       if (!user) {
         throw new Error("User not found!");
@@ -77,12 +74,6 @@ const userControllers = {
   deleteUser: async (req: Request, res: Response) => {
     try {
       await User.findByIdAndDelete(req.params.id);
-
-      await Store.updateMany(
-        { userFollowId: req.params.id },
-        { $pull: { userFollowId: req.params.id } }
-      );
-      await Store.deleteMany({ userId: req.params.id });
       await Address.deleteMany({ userId: req.params.id });
       await Order.deleteMany({ userId: req.params.id });
       await Comment.deleteMany({ userId: req.params.id });
