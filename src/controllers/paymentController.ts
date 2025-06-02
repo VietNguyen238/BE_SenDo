@@ -97,6 +97,7 @@ const paymentController = {
       const signData = qs.stringify(query);
       const hmac = crypto.createHmac("sha512", secretKey as string);
       const checkSum = hmac.update(signData).digest("hex");
+      console.log(query);
 
       if (vnp_SecureHash === checkSum) {
         if (query.vnp_ResponseCode === "00") {

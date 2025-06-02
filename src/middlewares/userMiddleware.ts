@@ -13,7 +13,7 @@ const userMiddleware = {
         process.env.JWT_SECRET_KEY as string,
         (err, user) => {
           if (err) {
-            throw new Error("Token is not valid!");
+            res.status(403).json("Token is not valid!");
           }
 
           (req as any).user = user;

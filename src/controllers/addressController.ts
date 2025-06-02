@@ -18,7 +18,8 @@ const addressController = {
 
   getUserAddress: async (req: Request, res: Response) => {
     try {
-      const address = await Address.find({ userId: req.params.id });
+      const userId = (req as any).user._id;
+      const address = await Address.findOne({ userId: userId });
       if (!address) {
         throw new Error("Address not found");
       }
@@ -49,7 +50,8 @@ const addressController = {
 
   updateAddress: async (req: Request, res: Response) => {
     try {
-      await Address.findByIdAndUpdate(req.params.id, req.body);
+      const userId = (req as any).user._id;
+      await Address.findOneAndUpdate({ userId: userId }, req.body);
 
       res.status(200).json("Updated successfully!");
     } catch (error) {
@@ -59,11 +61,12 @@ const addressController = {
 
   deleteAddress: async (req: Request, res: Response) => {
     try {
+      const userId = (req as any).user._id;
       await User.updateMany(
-        { addressUserId: req.params.id },
-        { $pull: { addressUserId: req.params.id } }
+        { addressUserId: userId },
+        { $pull: { addressUserId: userId } }
       );
-      await Address.findByIdAndDelete(req.params.id);
+      await Address.findOneAndDelete({ userId: userId });
 
       res.status(200).json("Deleted successfully!");
     } catch (error) {

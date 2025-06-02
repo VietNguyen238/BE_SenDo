@@ -1,38 +1,38 @@
-import express from "express";
-import productController from "../controllers/productController";
+import express, { RequestHandler } from "express";
+import productControllers from "../controllers/productController";
 import upload from "../middlewares/multer";
 import userMiddleware from "../middlewares/userMiddleware";
 
 const router = express.Router();
 
-router.get("/", productController.getAll);
+router.get("/", productControllers.getAllProduct as RequestHandler);
 
-router.get("/:id", productController.getById);
+router.get("/:id", productControllers.getAProduct as RequestHandler);
 
 router.post(
   "/",
   userMiddleware.verifyToken,
   upload.array("products", 8),
-  productController.addProduct
+  productControllers.addProduct as RequestHandler
 );
 
 router.post(
   "/add-Many",
   userMiddleware.verifyToken,
-  productController.createMany
+  productControllers.addProduct as RequestHandler
 );
 
 router.put(
   "/:id",
   userMiddleware.verifyToken,
   upload.array("products", 8),
-  productController.update
+  productControllers.updateProduct as RequestHandler
 );
 
 router.delete(
   "/:id",
   userMiddleware.verifyUserAndAdmin,
-  productController.delete
+  productControllers.deleteProduct as RequestHandler
 );
 
 export default router;

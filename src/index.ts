@@ -13,6 +13,7 @@ import orderRoute from "./routes/orderRoute";
 import categoryRoute from "./routes/categoryRoute";
 import reviewRoute from "./routes/reviewRoute";
 import paymentRoute from "./routes/paymentRoute";
+import cartRoute from "./routes/cartRoute";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/address", addressRoute);
+app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/comment", commentRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/chat", chatRoute);

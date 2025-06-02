@@ -2,30 +2,29 @@ import { Request, Response } from "express";
 import Product from "../models/product";
 import cloudinary from "../utils/cloudinary";
 import Comment from "../models/comment";
-import BaseController from "./baseController";
 
-class ProductController extends BaseController<any> {
-  constructor() {
-    super(Product);
-  }
-
-  async getAllProduct(req: Request, res: Response) {
+const productControllers = {
+  getAllProduct: async (req: Request, res: Response) => {
     try {
-      const products = await Product.find();
-      if (!products.length) {
+      const products = await Product.find()
+        .populate("categoryId")
+        .populate("commentId");
+
+      if (!products) {
         return res.status(404).json({ message: "No products found!" });
       }
       res.status(200).json(products);
     } catch (error) {
       res.status(500).json({ message: (error as Error).message });
     }
-  }
+  },
 
-  async getAProduct(req: Request, res: Response) {
+  getAProduct: async (req: Request, res: Response) => {
     try {
-      const product = await Product.findById(req.params.id).populate(
-        "commentId"
-      );
+      const product = await Product.findById(req.params.id)
+        .populate("commentId")
+        .populate("categoryId");
+
       if (!product) {
         return res.status(404).json({ message: "Product not found!" });
       }
@@ -33,9 +32,9 @@ class ProductController extends BaseController<any> {
     } catch (error) {
       res.status(500).json({ message: (error as Error).message });
     }
-  }
+  },
 
-  async addProduct(req: Request, res: Response) {
+  addProduct: async (req: Request, res: Response) => {
     try {
       const data = req.body;
       let imageUrl: string[] = [];
@@ -54,9 +53,9 @@ class ProductController extends BaseController<any> {
     } catch (error) {
       res.status(500).json({ message: (error as Error).message });
     }
-  }
+  },
 
-  async updateProduct(req: Request, res: Response) {
+  updateProduct: async (req: Request, res: Response) => {
     try {
       const data = req.body;
       let imageUrl: string[] = [];
@@ -82,9 +81,9 @@ class ProductController extends BaseController<any> {
     } catch (error) {
       res.status(500).json({ message: (error as Error).message });
     }
-  }
+  },
 
-  async deleteProduct(req: Request, res: Response) {
+  deleteProduct: async (req: Request, res: Response) => {
     try {
       const productId = req.params.id;
 
@@ -99,7 +98,7 @@ class ProductController extends BaseController<any> {
     } catch (error) {
       res.status(500).json({ message: (error as Error).message });
     }
-  }
-}
+  },
+};
 
-export default new ProductController();
+export default productControllers;

@@ -72,6 +72,20 @@ const authController = {
     try {
       const { password, ...formUser } = req.body;
 
+      const phoneUser = await User.findOne({ phone: formUser.phone });
+      if (phoneUser) {
+        return res.status(400).json({
+          message: "Phone already exists!",
+        });
+      }
+
+      const emailUser = await User.findOne({ email: formUser.email });
+      if (emailUser) {
+        return res.status(400).json({
+          message: "Email already exists!",
+        });
+      }
+
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(password, salt);
 
@@ -81,26 +95,27 @@ const authController = {
       });
 
       const saveUser = await newUser.save();
+      const { password: _, ...orther } = saveUser.toObject();
 
-      res.status(201).send(saveUser);
+      res.status(201).json(orther);
     } catch (error) {
-      res.status(500).json({ message: error });
+      res.status(500).json({
+        message: error,
+      });
     }
   },
 
   login: async (req: Request, res: Response) => {
     try {
-      console.log("Login req.body:", req.body);
-  
-      const user = await User.findOne({ email: req.body.email });
+      const user = await User.findOne({ phone: req.body.phone });
       if (!user) {
         throw new Error("User not found!");
       }
-  
+
       if (!user.password) {
         throw new Error("Password is empty or invalid!");
       }
-  
+
       const validPassword = await bcrypt.compare(
         req.body.password,
         user.password
@@ -108,28 +123,59 @@ const authController = {
       if (!validPassword) {
         throw new Error("Wrong password!");
       }
-  
+
       const accessToken = authController.generateAccessToken(user as any);
       const refreshToken = authController.generateRefreshToken(user as any);
-      console.log(refreshToken);
+
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: false,
         path: "/",
         sameSite: "strict",
       });
-  
+
       requestRefreshToken = refreshToken;
-  
+
       const { password, ...others } = user.toObject();
-  
+
       res.status(201).json({ ...others, accessToken });
     } catch (error) {
-      console.error("Login error:", error);
       res.status(500).json({ message: (error as Error).message });
     }
   },
-  
+
+  loginGoogle: async (req: Request, res: Response) => {
+    try {
+      let user = await User.findOne({ email: req.body.email });
+
+      if (!user) {
+        const newUser = new User({
+          name: req.body.name,
+          email: req.body.email,
+          password: req.body.sub,
+          imageUrl: req.body.picture,
+        });
+        user = await newUser.save();
+      }
+
+      const accessToken = authController.generateAccessToken(user);
+      const refreshToken = authController.generateRefreshToken(user);
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        path: "/",
+        sameSite: "strict",
+      });
+
+      requestRefreshToken = refreshToken;
+
+      const { password, ...others } = user.toObject();
+      res.status(201).json({ ...others, accessToken });
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  },
 
   logout: async (req: Request, res: Response) => {
     requestRefreshToken = "";
@@ -137,50 +183,6 @@ const authController = {
     res.clearCookie("refreshToken");
     res.status(200).json("Logout successfuly!");
   },
-
-  registerMany: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const users = req.body; // giả sử đây là mảng user
-
-      if (!Array.isArray(users)) {
-        res.status(400).json({ message: "Dữ liệu phải là mảng user" });
-        return;
-      }
-
-      const results = [];
-
-      for (const userData of users) {
-        const { email, password, ...formUser } = userData;
-
-        // Check email tồn tại chưa
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-          results.push({ email, status: "failed", message: "Email đã tồn tại" });
-          continue; // bỏ qua user này
-        }
-
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashed = await bcrypt.hash(password, salt);
-
-        const newUser = new User({
-          email,
-          ...formUser,
-          password: hashed,
-        });
-
-        const savedUser = await newUser.save();
-
-        results.push({ email, status: "success", userId: savedUser._id });
-      }
-
-      res.status(201).json(results);
-    } catch (error) {
-      res.status(500).json({ message: error });
-    }
-  },
 };
-
-
 
 export default authController;

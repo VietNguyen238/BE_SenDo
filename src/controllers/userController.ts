@@ -10,7 +10,9 @@ import Chat from "../models/chat";
 const userControllers = {
   getAllUser: async (req: Request, res: Response) => {
     try {
-      const user = await User.find();
+      const user = await User.find()
+        .populate("addressUserId")
+        .populate("orderId");
 
       if (!user) {
         throw new Error("User not found!");
@@ -24,7 +26,9 @@ const userControllers = {
 
   getAUser: async (req: Request, res: Response) => {
     try {
-      const user = await User.findById(req.params.id)
+      const userId = (req as any).user._id;
+
+      const user = await User.findById(userId)
         .populate("addressUserId")
         .populate("orderId");
 
@@ -42,8 +46,8 @@ const userControllers = {
     try {
       let imageUrl;
 
+      const userId = (req as any).user._id;
       const updateData = req.body;
-      const userId = req.params.id;
 
       if (req.file) {
         const cloud = await cloudinary.v2.uploader.upload(req.file.path);
@@ -73,11 +77,13 @@ const userControllers = {
 
   deleteUser: async (req: Request, res: Response) => {
     try {
-      await User.findByIdAndDelete(req.params.id);
-      await Address.deleteMany({ userId: req.params.id });
-      await Order.deleteMany({ userId: req.params.id });
-      await Comment.deleteMany({ userId: req.params.id });
-      await Chat.deleteMany({ members: { $in: [req.params.id] } });
+      const userId = (req as any).user._id;
+
+      await User.findByIdAndDelete(userId);
+      await Address.deleteMany({ userId: userId });
+      await Order.deleteMany({ userId: userId });
+      await Comment.deleteMany({ userId: userId });
+      await Chat.deleteMany({ members: { $in: [userId] } });
 
       res.status(200).json("Deleted successfully!");
     } catch (error) {

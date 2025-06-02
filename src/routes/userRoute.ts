@@ -6,15 +6,15 @@ import userMiddleware from "../middlewares/userMiddleware";
 const router = express.Router();
 
 router.get("/", userMiddleware.verifyUserAndAdmin, userControllers.getAllUser);
-router.get("/:id", userMiddleware.verifyUserAndAdmin, userControllers.getAUser);
+router.get("/me", userMiddleware.verifyToken, userControllers.getAUser);
 router.post(
-  "/update/:id",
+  "/update/me",
   userMiddleware.verifyToken,
   upload.single("avatar"),
   userControllers.updateUser
 );
 router.delete(
-  "/delete/:id",
+  "/delete/me",
   userMiddleware.verifyUserAndAdmin,
   userControllers.deleteUser
 );

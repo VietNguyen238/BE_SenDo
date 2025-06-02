@@ -9,19 +9,15 @@ router.get(
   userMiddleware.verifyUserAndAdmin,
   addressController.getAllAddress
 );
-router.get(
-  "/:id",
-  userMiddleware.verifyToken,
-  addressController.getUserAddress
-);
+router.get("/me", userMiddleware.verifyToken, addressController.getUserAddress);
 router.post("/add", userMiddleware.verifyToken, addressController.addAddress);
 router.post(
-  "/update/:id",
+  "/update/me",
   userMiddleware.verifyToken,
   addressController.updateAddress
 );
 router.delete(
-  "/delete/:id",
+  "/delete/me",
   userMiddleware.verifyToken,
   addressController.deleteAddress
 );
