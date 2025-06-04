@@ -31,7 +31,6 @@ const cartController = {
 
   addCart: async (req: Request, res: Response) => {
     try {
-      console.log(req.body);
       const newcart = new Cart(req.body);
       const savecart = await newcart.save();
 

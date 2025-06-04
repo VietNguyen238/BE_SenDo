@@ -4,8 +4,8 @@ import bcrypt from "bcrypt";
 import Address from "../models/address";
 import cloudinary from "../utils/cloudinary";
 import Order from "../models/order";
-import Comment from "../models/comment";
 import Chat from "../models/chat";
+import Review from "../models/review";
 
 const userControllers = {
   getAllUser: async (req: Request, res: Response) => {
@@ -82,7 +82,7 @@ const userControllers = {
       await User.findByIdAndDelete(userId);
       await Address.deleteMany({ userId: userId });
       await Order.deleteMany({ userId: userId });
-      await Comment.deleteMany({ userId: userId });
+      await Review.deleteMany({ userId: userId });
       await Chat.deleteMany({ members: { $in: [userId] } });
 
       res.status(200).json("Deleted successfully!");

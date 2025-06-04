@@ -33,10 +33,10 @@ const productSchema = new mongoose.Schema(
     basicInformation: {
       type: String,
     },
-    commentId: [
+    reviewId: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment",
+        ref: "Review",
       },
     ],
     imageUrl: [

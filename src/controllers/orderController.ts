@@ -6,13 +6,29 @@ import Product from "../models/product";
 const orderController = {
   getOrder: async (req: Request, res: Response) => {
     try {
-      const order = await Order.find({ userId: req.params.id })
+      const userId = (req as any).user._id;
+      const order = await Order.find({ userId: userId })
         .populate("userId")
         .populate("productId");
 
       if (!order || order.length === 0) {
         throw new Error("Order not found!");
-        // return res.status(404).json({ message:" Chưa có sản phẩm trong giỏ hàng! "})
+      }
+
+      res.status(200).json(order);
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  },
+
+  getIdOrder: async (req: Request, res: Response) => {
+    try {
+      const order = await Order.findById(req.params.id)
+        .populate("userId")
+        .populate("productId");
+
+      if (!order) {
+        throw new Error("Order not found!");
       }
 
       res.status(200).json(order);
@@ -23,7 +39,8 @@ const orderController = {
 
   addOrder: async (req: Request, res: Response) => {
     try {
-      const newOrder = new Order({...req.body,
+      const newOrder = new Order({
+        ...req.body,
         userId: (req as any).user._id,
       });
       const saveOrder = await newOrder.save();
@@ -90,21 +107,24 @@ const orderController = {
       const orders = req.body; // [{ productId, quantity, userId, ... }, {...}]
       const currentUser = (req as any).user;
       const savedOrders = [];
-  
+
       for (const orderData of orders) {
         // Kiểm tra nếu là admin thì cho phép tạo order cho user khác
-        const userId = currentUser.role === 'admin' && orderData.userId ? orderData.userId : currentUser._id;
-        
+        const userId =
+          currentUser.role === "admin" && orderData.userId
+            ? orderData.userId
+            : currentUser._id;
+
         const newOrder = new Order({
           ...orderData,
           userId,
         });
-  
+
         const savedOrder = await newOrder.save();
         savedOrders.push(savedOrder);
-  
+
         const product = await Product.findById(savedOrder.productId);
-  
+
         if (savedOrder.productId && product) {
           if (savedOrder.quantity && savedOrder.quantity <= product.quantity) {
             await Product.updateOne(
@@ -121,7 +141,7 @@ const orderController = {
             return;
           }
         }
-  
+
         if (savedOrder.userId) {
           await User.updateOne(
             { _id: savedOrder.userId },
@@ -129,13 +149,12 @@ const orderController = {
           );
         }
       }
-  
+
       res.status(200).json(savedOrders);
     } catch (error) {
       res.status(500).json({ message: error });
     }
-  }
-
+  },
 };
 
 export default orderController;

@@ -7,13 +7,13 @@ const reviewController = {
     try {
       const { productId, rating, comment, images } = req.body;
       const userId = (req as any).user._id;
-      const existed = await Review.findOne({userId, productId});
+      const existed = await Review.find({ userId: userId });
       if (existed) {
-        res.status(400).json({message : "Bạn đã đánh giá sản phẩm này rồi! "});
+        res.status(400).json({ message: "Bạn đã đánh giá sản phẩm này rồi! " });
         return;
       }
-      if (!productId || !rating){
-        res.status(400).json({ message: "Thiếu productId hoặc rating!"})
+      if (!productId || !rating) {
+        res.status(400).json({ message: "Thiếu productId hoặc rating!" });
         return;
       }
       const newReview = new Review({
@@ -32,10 +32,14 @@ const reviewController = {
 
   getReviews: async (req: Request, res: Response) => {
     try {
-      const { productId } = req.params;
-      const reviews = await Review.find({ productId })
-        .populate("userId", "name")
-        .sort({ createdAt: -1 });
+      const productId = req.params.id;
+      const reviews = await Review.find({ productId: productId }).populate(
+        "userId"
+      );
+
+      if (!reviews) {
+        throw Error("Review not found!");
+      }
 
       res.status(200).json(reviews);
     } catch (error) {

@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
 import Product from "../models/product";
 import cloudinary from "../utils/cloudinary";
-import Comment from "../models/comment";
+import Review from "../models/review";
 
 const productControllers = {
   getAllProduct: async (req: Request, res: Response) => {
     try {
       const products = await Product.find()
         .populate("categoryId")
-        .populate("commentId");
+        .populate("reviewId");
 
       if (!products) {
         return res.status(404).json({ message: "No products found!" });
@@ -22,7 +22,7 @@ const productControllers = {
   getAProduct: async (req: Request, res: Response) => {
     try {
       const product = await Product.findById(req.params.id)
-        .populate("commentId")
+        .populate("reviewId")
         .populate("categoryId");
 
       if (!product) {
@@ -87,7 +87,7 @@ const productControllers = {
     try {
       const productId = req.params.id;
 
-      await Comment.deleteMany({ productId });
+      await Review.deleteMany({ productId });
       const deleted = await Product.findByIdAndDelete(productId);
 
       if (!deleted) {

@@ -9,7 +9,6 @@ const orderSchema = new mongoose.Schema(
     productId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
-      required: true,
     },
     status: {
       type: String,
@@ -18,6 +17,7 @@ const orderSchema = new mongoose.Schema(
         "confirmed",
         "shipping",
         "delivered",
+        "received",
         "canceled",
       ],
     },
@@ -27,7 +27,6 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethob: {
       type: String,
-      enum: ["cod", "vnpay"],
     },
     shippingMethod: {
       type: String,
