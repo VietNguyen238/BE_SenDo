@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import Order from "../models/order";
 import User from "../models/user";
 import Product from "../models/product";
+import Cart from "../models/cart";
 
 const orderController = {
   getOrder: async (req: Request, res: Response) => {
@@ -9,10 +10,10 @@ const orderController = {
       const userId = (req as any).user._id;
       const order = await Order.find({ userId: userId })
         .populate("userId")
-        .populate("productId");
+        .populate("orders.productId");
 
       if (!order || order.length === 0) {
-        throw new Error("Order not found!");
+        return res.status(404).json({ message: "Order not found!" });
       }
 
       res.status(200).json(order);
@@ -25,10 +26,10 @@ const orderController = {
     try {
       const order = await Order.findById(req.params.id)
         .populate("userId")
-        .populate("productId");
+        .populate("orders.productId");
 
       if (!order) {
-        throw new Error("Order not found!");
+        return res.status(404).json({ message: "Order not found!" });
       }
 
       res.status(200).json(order);
@@ -39,12 +40,12 @@ const orderController = {
 
   addOrder: async (req: Request, res: Response) => {
     try {
+      console.log(req.body);
       const newOrder = new Order({
         ...req.body,
         userId: (req as any).user._id,
       });
       const saveOrder = await newOrder.save();
-      const product = await Product.findById(saveOrder.productId);
 
       if (saveOrder.userId) {
         await User.updateMany(
@@ -53,22 +54,32 @@ const orderController = {
         );
       }
 
-      if (saveOrder.productId) {
-        await Product.updateMany(
-          { _id: saveOrder.productId },
-          { $push: { orderId: saveOrder._id } }
-        );
-      }
+      await Cart.deleteMany({ userId: saveOrder.userId });
 
-      if (
-        product &&
-        saveOrder.quantity &&
-        saveOrder.quantity <= product.quantity
-      ) {
-        await Product.updateMany(
-          { _id: saveOrder.productId },
-          { $set: { quantity: product.quantity - saveOrder.quantity } }
-        );
+      for (const orderItem of saveOrder.orders) {
+        if (orderItem.productId) {
+          const product = await Product.findById(orderItem.productId);
+
+          if (!product) {
+            return res.status(404).json({
+              message: `Product not found with ID ${orderItem.productId}`,
+            });
+          }
+
+          if (!orderItem.quantity || orderItem.quantity > product.quantity) {
+            return res.status(400).json({
+              message: `Insufficient stock for product ID ${orderItem.productId}`,
+            });
+          }
+
+          await Product.updateOne(
+            { _id: orderItem.productId },
+            {
+              $inc: { quantity: -orderItem.quantity },
+              $push: { orderId: saveOrder._id },
+            }
+          );
+        }
       }
 
       res.status(200).json(saveOrder);
@@ -79,9 +90,16 @@ const orderController = {
 
   updateOrder: async (req: Request, res: Response) => {
     try {
-      await Order.findByIdAndUpdate(req.params.id, req.body);
+      const updatedOrder = await Order.findByIdAndUpdate(
+        req.params.id,
+        req.body
+      );
 
-      res.status(200).json("Updated successfully");
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Order not found!" });
+      }
+
+      res.status(200).json({ message: "Updated successfully" });
     } catch (error) {
       res.status(500).json({ message: error });
     }
@@ -89,27 +107,30 @@ const orderController = {
 
   deleteOrder: async (req: Request, res: Response) => {
     try {
-      await Order.findByIdAndDelete(req.params.id);
+      const deletedOrder = await Order.findByIdAndDelete(req.params.id);
+
+      if (!deletedOrder) {
+        return res.status(404).json({ message: "Order not found!" });
+      }
+
       await User.updateMany(
         { orderId: req.params.id },
         { $pull: { orderId: req.params.id } }
       );
 
-      res.status(200).json("Deleted successfully");
+      res.status(200).json({ message: "Deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: error });
     }
   },
 
-  // phương thức dùng để fake data cho recommend
-  addManyOrders: async (req: Request, res: Response, next: NextFunction) => {
+  addManyOrders: async (req: Request, res: Response) => {
     try {
-      const orders = req.body; // [{ productId, quantity, userId, ... }, {...}]
+      const orders = req.body;
       const currentUser = (req as any).user;
       const savedOrders = [];
 
       for (const orderData of orders) {
-        // Kiểm tra nếu là admin thì cho phép tạo order cho user khác
         const userId =
           currentUser.role === "admin" && orderData.userId
             ? orderData.userId
@@ -123,22 +144,29 @@ const orderController = {
         const savedOrder = await newOrder.save();
         savedOrders.push(savedOrder);
 
-        const product = await Product.findById(savedOrder.productId);
+        for (const orderItem of savedOrder.orders) {
+          if (orderItem.productId) {
+            const product = await Product.findById(orderItem.productId);
 
-        if (savedOrder.productId && product) {
-          if (savedOrder.quantity && savedOrder.quantity <= product.quantity) {
+            if (!product) {
+              return res.status(404).json({
+                message: `Product not found with ID ${orderItem.productId}`,
+              });
+            }
+
+            if (!orderItem.quantity || orderItem.quantity > product.quantity) {
+              return res.status(400).json({
+                message: `Insufficient stock for product ID ${orderItem.productId}`,
+              });
+            }
+
             await Product.updateOne(
-              { _id: savedOrder.productId },
+              { _id: orderItem.productId },
               {
-                $inc: { quantity: -savedOrder.quantity },
+                $inc: { quantity: -orderItem.quantity },
                 $push: { orderId: savedOrder._id },
               }
             );
-          } else {
-            res.status(400).json({
-              message: `Sản phẩm với ID ${savedOrder.productId} không đủ hàng`,
-            });
-            return;
           }
         }
 

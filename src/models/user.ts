@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
         ref: "Order",
       },
     ],
-    commentId: [
+    reviewId: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment",

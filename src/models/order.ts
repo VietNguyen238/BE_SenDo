@@ -6,9 +6,29 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
+    orders: [
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+        },
+        quantity: {
+          type: Number,
+          require: true,
+        },
+      },
+    ],
+    province: {
+      type: String,
+    },
+    district: {
+      type: String,
+    },
+    ward: {
+      type: String,
+    },
+    address: {
+      type: String,
     },
     status: {
       type: String,
@@ -21,10 +41,6 @@ const orderSchema = new mongoose.Schema(
         "canceled",
       ],
     },
-    quantity: {
-      type: Number,
-      require: true,
-    },
     paymentMethob: {
       type: String,
     },
@@ -32,6 +48,9 @@ const orderSchema = new mongoose.Schema(
       type: String,
     },
     shippingFee: {
+      type: Number,
+    },
+    total: {
       type: Number,
     },
     note: {
