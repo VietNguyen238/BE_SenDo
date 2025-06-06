@@ -41,7 +41,7 @@ const orderSchema = new mongoose.Schema(
         "canceled",
       ],
     },
-    paymentMethob: {
+    paymentMethod: {
       type: String,
     },
     shippingMethod: {

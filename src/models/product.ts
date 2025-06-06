@@ -7,9 +7,6 @@ const productSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    productCode: {
-      type: String,
-    },
     color: [
       {
         type: String,
