@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import userControllers from "../controllers/userController";
 import upload from "../middlewares/multer";
 import userMiddleware from "../middlewares/userMiddleware";
@@ -11,7 +11,7 @@ router.post(
   "/update/me",
   userMiddleware.verifyToken,
   upload.single("avatar"),
-  userControllers.updateUser
+  userControllers.updateUser as RequestHandler
 );
 router.delete(
   "/delete/me",

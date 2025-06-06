@@ -60,6 +60,20 @@ const userControllers = {
           imageUrl: imageUrl,
         });
       } else {
+        const user = await User.findById(userId);
+        if (!user) {
+          throw new Error("User not found!");
+        }
+        const comoarePassword = await bcrypt.compare(
+          req.body.oldPassword,
+          user.password
+        );
+
+        if (!comoarePassword) {
+          return res
+            .status(401)
+            .json({ message: "Mật khẩu cũ đã sai hãy nhập lại!" });
+        }
         const salt = await bcrypt.genSalt(10);
         const hashed = await bcrypt.hash(req.body.password, salt);
         await User.findByIdAndUpdate(userId, {

@@ -75,14 +75,14 @@ const authController = {
       const phoneUser = await User.findOne({ phone: formUser.phone });
       if (phoneUser) {
         return res.status(400).json({
-          message: "Phone already exists!",
+          message: "Số điện thoại đã tồn tại!",
         });
       }
 
       const emailUser = await User.findOne({ email: formUser.email });
       if (emailUser) {
         return res.status(400).json({
-          message: "Email already exists!",
+          message: "Email đã tồn tại!",
         });
       }
 
