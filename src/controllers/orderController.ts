@@ -5,6 +5,22 @@ import Product from "../models/product";
 import Cart from "../models/cart";
 
 const orderController = {
+  getAllOrder: async (req: Request, res: Response) => {
+    try {
+      const order = await Order.find()
+        .populate("userId")
+        .populate("orders.productId");
+
+      if (!order || order.length === 0) {
+        return res.status(404).json({ message: "Order not found!" });
+      }
+
+      res.status(200).json(order);
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  },
+
   getOrder: async (req: Request, res: Response) => {
     try {
       const userId = (req as any).user._id;

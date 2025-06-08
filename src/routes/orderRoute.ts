@@ -5,6 +5,11 @@ import userMiddleware from "../middlewares/userMiddleware";
 const router = express.Router();
 
 router.get(
+  "/",
+  userMiddleware.verifyUserAndAdmin,
+  orderController.getAllOrder as RequestHandler
+);
+router.get(
   "/me",
   userMiddleware.verifyToken,
   orderController.getOrder as RequestHandler
