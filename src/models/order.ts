@@ -41,6 +41,12 @@ const orderSchema = new mongoose.Schema(
         "canceled",
       ],
     },
+    pickupDate: {
+      type: String,
+    },
+    pickupTime: {
+      type: String,
+    },
     paymentMethod: {
       type: String,
     },

@@ -22,7 +22,7 @@ router.post(
   productControllers.addProduct as RequestHandler
 );
 
-router.put(
+router.post(
   "/:id",
   userMiddleware.verifyToken,
   upload.array("products", 8),

@@ -69,7 +69,7 @@ const productControllers = {
 
       const updated = await Product.findByIdAndUpdate(
         req.params.id,
-        { ...data, ...(imageUrl.length ? { imageUrl } : {}) },
+        { ...data, ...(imageUrl.length ? { imageUrl: imageUrl } : {}) },
         { new: true }
       );
 

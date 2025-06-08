@@ -17,12 +17,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    dateOfBirth: {
-      type: String,
-    },
-    sex: {
-      type: String,
-    },
     imageUrl: {
       type: String,
     },

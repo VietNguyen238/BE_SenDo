@@ -13,6 +13,7 @@ import categoryRoute from "./routes/categoryRoute";
 import reviewRoute from "./routes/reviewRoute";
 import paymentRoute from "./routes/paymentRoute";
 import cartRoute from "./routes/cartRoute";
+import blogRoute from "./routes/blogRoute";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/address", addressRoute);
 app.use("/api/v1/cart", cartRoute);
+app.use("/api/v1/blog", blogRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/chat", chatRoute);
 app.use("/api/v1/message", messageRoute);
