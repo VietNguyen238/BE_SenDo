@@ -37,6 +37,15 @@ const productControllers = {
   addProduct: async (req: Request, res: Response) => {
     try {
       const data = req.body;
+
+      // Validate categoryId
+      if (!data.categoryId) {
+        return res.status(400).json({
+          message: "Category ID is required",
+          error: "Missing categoryId",
+        });
+      }
+
       let imageUrl: string[] = [];
 
       if (Array.isArray(req.files)) {
@@ -46,11 +55,35 @@ const productControllers = {
         }
       }
 
-      const newProduct = new Product({ ...data, imageUrl });
-      const savedProduct = await newProduct.save();
-
-      res.status(201).json(savedProduct);
+      const newProduct = new Product({ ...data, imageUrl: imageUrl });
+      console.log("Product data before save:", newProduct);
+      try {
+        const savedProduct = await newProduct.save();
+        console.log("Product saved successfully:", savedProduct);
+        res.status(201).json(savedProduct);
+      } catch (saveError: any) {
+        console.error("Error saving product:", saveError);
+        if (saveError.code === 11000) {
+          return res.status(400).json({
+            message: "A product with this name already exists",
+            error: "Duplicate product name",
+          });
+        }
+        if (saveError.name === "ValidationError") {
+          return res.status(400).json({
+            message: "Validation error",
+            error: Object.values(saveError.errors).map(
+              (err: any) => err.message
+            ),
+          });
+        }
+        res.status(500).json({
+          message: "Error saving product",
+          error: (saveError as Error).message,
+        });
+      }
     } catch (error) {
+      console.error("General error:", error);
       res.status(500).json({ message: (error as Error).message });
     }
   },

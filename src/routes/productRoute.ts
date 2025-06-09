@@ -10,7 +10,7 @@ router.get("/", productControllers.getAllProduct as RequestHandler);
 router.get("/:id", productControllers.getAProduct as RequestHandler);
 
 router.post(
-  "/",
+  "/add",
   userMiddleware.verifyToken,
   upload.array("products", 8),
   productControllers.addProduct as RequestHandler
